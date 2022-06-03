@@ -20,7 +20,9 @@ public class FlappyBird implements ActionListener, KeyListener
 	
 	public static Rectangle bird;
 	
-	public int ticks, yMotion, score;
+	public int ticks;
+	public int yMotion;
+	public static int score;
 	
 	public static ArrayList<Rectangle> columns;
 	
@@ -112,8 +114,25 @@ public class FlappyBird implements ActionListener, KeyListener
 			bird.y += yMotion;
 
 			for (Rectangle column : columns) {
+				// Is bird in center of column? then increment score.
+				if (column.y == 0 && bird.x + bird.width / 2 > column.x + column.width / 2 - 10 && bird.x + bird.width / 2 < column.x + column.width / 2 + 10)
+				{
+					score++;
+				}
+
 				if (column.intersects(bird)) {
 					gameOver = true;
+
+					if (bird.x <= column.x)
+					{
+						bird.x = column.x - bird.width;
+					} else {
+						if (column.y != 0) {
+							bird.y = column.y - bird.height;
+						} else if (bird.y < column.height) {
+							bird.y = column.height;
+						}
+					}
 
 					bird.x = column.x - bird.width;
 				}
@@ -179,12 +198,17 @@ public class FlappyBird implements ActionListener, KeyListener
 
 		if (!started)
 		{
-			g.drawString("Press key to start!", 100, HEIGHT / 2 - 50);
+			g.drawString("Press space bar!", 0, HEIGHT / 2 - 50);
 		}
 
 		if (gameOver)
 		{
 			g.drawString("Game Over!", 100, HEIGHT / 2 - 50);
+		}
+
+		if (!gameOver && started)
+		{
+			g.drawString(String.valueOf(score), WIDTH / 2 - 25, 100);
 		}
 	}
 	
@@ -201,7 +225,10 @@ public class FlappyBird implements ActionListener, KeyListener
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		jump();
+		if (e.getKeyCode() == KeyEvent.VK_SPACE)
+		{
+			jump();
+		}
 	}
 
 	@Override
